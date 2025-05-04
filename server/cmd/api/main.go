@@ -1,7 +1,7 @@
 package main
 
 import (
-	"khalidibnwalid/honeybee_server/internal/server"
+	"khalidibnwalid/luma_server/internal/server"
 	"log"
 	"os"
 	"strconv"
