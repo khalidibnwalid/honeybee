@@ -1,6 +1,7 @@
 package main
 
 import (
+	"khalidibnwalid/luma_server/internal/handlers"
 	"khalidibnwalid/luma_server/internal/server"
 	"log"
 	"os"
@@ -21,11 +22,17 @@ func main() {
 		log.Fatalf("Failed to connect to database: %v", err)
 	}
 
+	log.Println("Connected to database")
+
 	if envPort, err := strconv.Atoi(os.Getenv("PORT")); err == nil {
 		port = envPort
 	}
 
-	server := server.NewServer(port)
+	server, err := handlers.NewServer(port)
+	if err != nil {
+		log.Fatalf("Failed to create server: %v", err)
+	}
+
 	log.Printf("Starting server on port %d...\n", port)
 	server.ListenAndServe()
 }
