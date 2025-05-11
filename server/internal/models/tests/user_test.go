@@ -19,7 +19,7 @@ func TestUserModel(t *testing.T) {
 			HashedPassword: "hashedpassword",
 		}
 
-		err := user.Create(&ctx.ServerContext.DB)
+		err := user.Create(ctx.ServerContext.DB)
 
 		assert.NoError(t, err)
 		assert.NotEqual(t, uuid.Nil, user.ID)
@@ -34,12 +34,12 @@ func TestUserModel(t *testing.T) {
 			HashedPassword: "hashedpassword",
 		}
 
-		err := originalUser.Create(&ctx.ServerContext.DB)
+		err := originalUser.Create(ctx.ServerContext.DB)
 		assert.NoError(t, err)
 
 		// retrieve the user by ID
 		var retrievedUser models.User
-		err = retrievedUser.GetByID(&ctx.ServerContext.DB, originalUser.ID)
+		err = retrievedUser.GetByID(ctx.ServerContext.DB, originalUser.ID)
 
 		assert.NoError(t, err)
 		assert.Equal(t, originalUser.ID, retrievedUser.ID)
@@ -53,12 +53,12 @@ func TestUserModel(t *testing.T) {
 			Email:          "getbyusername@example.com",
 			HashedPassword: "hashedpassword",
 		}
-		err := originalUser.Create(&ctx.ServerContext.DB)
+		err := originalUser.Create(ctx.ServerContext.DB)
 		assert.NoError(t, err)
 
 		// retrieve the user by username
 		var retrievedUser models.User
-		err = retrievedUser.GetByUsername(&ctx.ServerContext.DB, originalUser.Username)
+		err = retrievedUser.GetByUsername(ctx.ServerContext.DB, originalUser.Username)
 
 		assert.NoError(t, err)
 		assert.Equal(t, originalUser.ID, retrievedUser.ID)
@@ -72,19 +72,19 @@ func TestUserModel(t *testing.T) {
 			Email:          "update@example.com",
 			HashedPassword: "hashedpassword",
 		}
-		err := user.Create(&ctx.ServerContext.DB)
+		err := user.Create(ctx.ServerContext.DB)
 		assert.NoError(t, err)
 
 		// Update user fields
 		user.Username = "updateduservalue"
 		user.Email = "updated@example.com"
 
-		err = user.Update(&ctx.ServerContext.DB)
+		err = user.Update(ctx.ServerContext.DB)
 		assert.NoError(t, err)
 
 		// Retrieve the user to confirm updates
 		var retrievedUser models.User
-		err = retrievedUser.GetByID(&ctx.ServerContext.DB, user.ID)
+		err = retrievedUser.GetByID(ctx.ServerContext.DB, user.ID)
 
 		assert.NoError(t, err)
 		assert.Equal(t, "updateduservalue", retrievedUser.Username)
@@ -97,15 +97,15 @@ func TestUserModel(t *testing.T) {
 			Email:          "delete@example.com",
 			HashedPassword: "hashedpassword",
 		}
-		err := user.Create(&ctx.ServerContext.DB)
+		err := user.Create(ctx.ServerContext.DB)
 		assert.NoError(t, err)
 
-		err = user.Delete(&ctx.ServerContext.DB)
+		err = user.Delete(ctx.ServerContext.DB)
 		assert.NoError(t, err)
 
 		// Try to retrieve the deleted user, should return error
 		var retrievedUser models.User
-		err = retrievedUser.GetByID(&ctx.ServerContext.DB, user.ID)
+		err = retrievedUser.GetByID(ctx.ServerContext.DB, user.ID)
 		assert.Error(t, err)
 	})
 }

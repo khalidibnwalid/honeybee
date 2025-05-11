@@ -5,7 +5,7 @@ import (
 )
 
 type ServerContext struct {
-	DB database.Database
+	DB *database.Database
 }
 
 func NewServerContext() (*ServerContext, error) {
@@ -15,6 +15,6 @@ func NewServerContext() (*ServerContext, error) {
 	}
 
 	return &ServerContext{
-		DB: *db,
+		DB: db,
 	}, nil
 }
