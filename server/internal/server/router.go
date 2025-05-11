@@ -23,18 +23,19 @@ func (r *Router) Use(mw ...middleware) {
 	r.middlewares = append(r.middlewares, mw...)
 }
 
-func MergeRoutes(routes ...*Router) *http.ServeMux {
-	h := http.NewServeMux()
-	for _, r := range routes {
-		h.Handle(r.prefix+"/", http.StripPrefix(r.prefix, *r.handlerAfterMiddlewares))
-	}
-	return h
-}
+// func MergeRoutes(routes ...*Router) *http.ServeMux {
+// 	h := http.NewServeMux()
+// 	for _, r := range routes {
+// 		h.Handle(r.prefix+"/", http.StripPrefix(r.prefix, *r.handlerAfterMiddlewares))
+// 	}
+// 	return h
+// }
 
 type middleware func(http.Handler) http.Handler
 
-func (r *Router) ApplyMiddlewares() {
+func (r *Router) ApplyMiddlewares() *http.Handler {
 	r.handlerAfterMiddlewares = ApplyMiddlewares(r.middlewares, r.ServeMux)
+	return r.handlerAfterMiddlewares
 }
 
 func ApplyMiddlewares(mw []middleware, h http.Handler) *http.Handler {

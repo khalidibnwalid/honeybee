@@ -1,21 +1,20 @@
 package handlers
 
 import (
+	"khalidibnwalid/luma_server/internal/middlewares"
 	"khalidibnwalid/luma_server/internal/server"
 	"net/http"
+	"os"
+	"strings"
+
+	"github.com/99designs/gqlgen/graphql/playground"
+	_ "github.com/joho/godotenv/autoload"
 )
 
 // Register the routes for the server here
 func (s *ServerHandlerContext) registrar() *http.ServeMux {
-	routes := server.MergeRoutes(
-		// s.unauthRoutes("/v1/login"),
-		s.authRoutes("/v1"),
-	)
-	return routes
-}
-
-func (s *ServerHandlerContext) authRoutes(prefix string) *server.Router {
-	r := server.NewRouter(prefix)
+	h := http.NewServeMux()
+	r := server.NewRouter("/")
 
 	// r.Use(func(next http.Handler) http.Handler {
 	// 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
@@ -25,21 +24,17 @@ func (s *ServerHandlerContext) authRoutes(prefix string) *server.Router {
 	// 	})
 	// })
 
-	// Register the routes for the server here
-	// r.HandleFunc("GET /hello",s.PostUser)
+	r.Use(middlewares.CORS)
 
-	r.ApplyMiddlewares()
-	return r
+	if strings.ToLower(os.Getenv("PRODUCTION")) != "true" {
+		r.Handle("/graphpg", playground.Handler("GraphQL playground", "/query"))
+	}
+
+	r.Handle("/query", s.GraphQLHandler())
+
+	handler := r.ApplyMiddlewares()
+
+	h.Handle("/", *handler)
+
+	return h
 }
-
-// func (s *ServerHandlerContext) unauthRoutes(prefix string) *router {
-// 	r := newRouter(prefix)
-
-// 	// Register the routes for the server here
-// 	r.HandleFunc("GET /hello", func(w http.ResponseWriter, r *http.Request) {
-// 		w.Write([]byte("Hello, Worldd!"))
-// 	})
-
-// 	r.applyMiddlewares()
-// 	return r
-// }
