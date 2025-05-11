@@ -1,6 +1,7 @@
 package models_test
 
 import (
+	"khalidibnwalid/luma_server/internal/crypto"
 	"khalidibnwalid/luma_server/internal/models"
 	"khalidibnwalid/luma_server/internal/testutils"
 	"testing"
@@ -12,10 +13,11 @@ import (
 func TestUserModel(t *testing.T) {
 	ctx := testutils.NewTestingServerHandlerCtx(t)
 
-	t.Run("Create", func(t *testing.T) {
+	t.Run("Create & GetByID", func(t *testing.T) {
+		username := crypto.RandomString(10)
 		user := models.User{
-			Username:       "testuser",
-			Email:          "test@example.com",
+			Username:       username,
+			Email:          username + "@example.com",
 			HashedPassword: "hashedpassword",
 		}
 
@@ -25,32 +27,21 @@ func TestUserModel(t *testing.T) {
 		assert.NotEqual(t, uuid.Nil, user.ID)
 		assert.NotZero(t, user.CreatedAt)
 		assert.NotZero(t, user.UpdatedAt)
-	})
 
-	t.Run("GetByID", func(t *testing.T) {
-		originalUser := models.User{
-			Username:       "getbyiduser",
-			Email:          "getbyid@example.com",
-			HashedPassword: "hashedpassword",
-		}
-
-		err := originalUser.Create(ctx.ServerContext.DB)
-		assert.NoError(t, err)
-
-		// retrieve the user by ID
+		// Check if the user exists in the database
 		var retrievedUser models.User
-		err = retrievedUser.GetByID(ctx.ServerContext.DB, originalUser.ID)
-
+		err = retrievedUser.GetByID(ctx.ServerContext.DB, user.ID)
 		assert.NoError(t, err)
-		assert.Equal(t, originalUser.ID, retrievedUser.ID)
-		assert.Equal(t, originalUser.Username, retrievedUser.Username)
-		assert.Equal(t, originalUser.Email, retrievedUser.Email)
+		assert.Equal(t, user.ID, retrievedUser.ID)
+		assert.Equal(t, user.Username, retrievedUser.Username)
 	})
 
 	t.Run("GetByUsername", func(t *testing.T) {
+		username := crypto.RandomString(10)
+
 		originalUser := models.User{
-			Username:       "getbyusername",
-			Email:          "getbyusername@example.com",
+			Username:       username,
+			Email:          username + "@example.com",
 			HashedPassword: "hashedpassword",
 		}
 		err := originalUser.Create(ctx.ServerContext.DB)
@@ -67,17 +58,18 @@ func TestUserModel(t *testing.T) {
 	})
 
 	t.Run("Update", func(t *testing.T) {
+		originalUsername := crypto.RandomString(10)
+
 		user := models.User{
-			Username:       "updateuser",
-			Email:          "update@example.com",
+			Username:       originalUsername,
+			Email:          originalUsername + "@example.com",
 			HashedPassword: "hashedpassword",
 		}
 		err := user.Create(ctx.ServerContext.DB)
 		assert.NoError(t, err)
 
 		// Update user fields
-		user.Username = "updateduservalue"
-		user.Email = "updated@example.com"
+		user.Username = crypto.RandomString(10)
 
 		err = user.Update(ctx.ServerContext.DB)
 		assert.NoError(t, err)
@@ -87,14 +79,17 @@ func TestUserModel(t *testing.T) {
 		err = retrievedUser.GetByID(ctx.ServerContext.DB, user.ID)
 
 		assert.NoError(t, err)
-		assert.Equal(t, "updateduservalue", retrievedUser.Username)
-		assert.Equal(t, "updated@example.com", retrievedUser.Email)
+		assert.Equal(t, user.Username, retrievedUser.Username)
+		// Ensure the Email and ID remains the same
+		assert.Equal(t, user.ID, retrievedUser.ID)
+		assert.Equal(t, user.Email, retrievedUser.Email)
 	})
 
 	t.Run("Delete", func(t *testing.T) {
+		username := crypto.RandomString(10)
 		user := models.User{
-			Username:       "deleteuser",
-			Email:          "delete@example.com",
+			Username:       username,
+			Email:          username + "@example.com",
 			HashedPassword: "hashedpassword",
 		}
 		err := user.Create(ctx.ServerContext.DB)
