@@ -2,5 +2,20 @@
 
 package graph_models
 
+type Mutation struct {
+}
+
 type Query struct {
+}
+
+type LoginInput struct {
+	Email    *string `json:"email,omitempty"`
+	Username *string `json:"username,omitempty"`
+	Password string  `json:"password"`
+}
+
+type SignupInput struct {
+	Username string `json:"username"`
+	Email    string `json:"email"`
+	Password string `json:"password"`
 }

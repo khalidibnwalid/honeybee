@@ -2,6 +2,7 @@ package handlers
 
 import (
 	"khalidibnwalid/luma_server/internal/graph"
+	"khalidibnwalid/luma_server/internal/resolvers"
 	"net/http"
 
 	"github.com/99designs/gqlgen/graphql/handler"
@@ -12,7 +13,9 @@ import (
 )
 
 func (s *ServerHandlerContext) GraphQLHandler() http.Handler {
-	srv := handler.New(graph.NewExecutableSchema(graph.Config{Resolvers: &graph.Resolver{}}))
+	srv := handler.New(graph.NewExecutableSchema(graph.Config{Resolvers: &resolvers.Resolver{
+		ServerContext: s.ServerContext,
+	}}))
 
 	srv.AddTransport(transport.Options{})
 	srv.AddTransport(transport.GET{})

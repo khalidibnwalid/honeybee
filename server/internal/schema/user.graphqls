@@ -1,0 +1,30 @@
+# type User @goModal(modal: "khalidibnwalid/luma_server/internal/models.User") {
+type User {
+  id: ID!
+  username: String
+  email: String
+  avatarUrl: String
+  createdAt: String
+  updatedAt: String
+}
+
+input signupInput {
+  username: String!
+  email: String!
+  password: String!
+}
+
+input loginInput {
+  email: String
+  username: String
+  password: String!
+}
+
+type Mutation {
+  signup(input: signupInput!): User
+  login(input: loginInput!): User
+}
+
+type Query {
+  getUser(id: ID!): User
+}

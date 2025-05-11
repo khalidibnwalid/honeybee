@@ -1,6 +1,6 @@
 # Where are all the schema files located? globs are supported eg  src/**/*.graphqls
 schema:
-  - internal/graph/*.graphqls
+  - internal/schema/*.graphqls
 
 # Where should the generated server code go?
 exec:
@@ -35,14 +35,14 @@ model:
 
 # Where should the resolver implementations go?
 resolver:
-  package: graph
+  package: resolvers
   layout: follow-schema # Only other option is "single-file."
 
   # Only for single-file layout:
   # filename: internal/graph/resolver.go
 
   # Only for follow-schema layout:
-  dir: internal/graph
+  dir: internal/resolvers
   filename_template: "{name}.resolvers.go"
 
   # Optional: turn on to not generate template comments above resolvers
@@ -135,11 +135,15 @@ models:
       - github.com/99designs/gqlgen/graphql.Int
       - github.com/99designs/gqlgen/graphql.Int64
       - github.com/99designs/gqlgen/graphql.Int32
-  # gqlgen provides a default GraphQL UUID convenience wrapper for github.com/google/uuid 
+  # gqlgen provides a default GraphQL UUID convenience wrapper for github.com/google/uuid
   # but you can override this to provide your own GraphQL UUID implementation
   UUID:
     model:
       - github.com/99designs/gqlgen/graphql.UUID
+
+  # Models
+  User:
+    model: khalidibnwalid/luma_server/internal/models.User
 
   # The GraphQL spec explicitly states that the Int type is a signed 32-bit
   # integer. Using Go int or int64 to represent it can lead to unexpected
