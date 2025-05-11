@@ -2,6 +2,7 @@ package models
 
 import (
 	"database/sql"
+	"khalidibnwalid/luma_server/internal/crypto"
 	"khalidibnwalid/luma_server/internal/database"
 	"time"
 
@@ -23,6 +24,17 @@ func (User) TableName() string {
 }
 
 // # User model methods
+
+// Hash the password, serialize it, and set it to the user.HashedPassword field
+func (u *User) SetPassword(password string) {
+	passwordHash, salt := crypto.HashWithSalt(password)
+	u.HashedPassword = crypto.SerializeHashWithSalt(passwordHash, salt)
+}
+
+// Verify the password against the HashedPassword
+func (u *User) VerifyPassword(password string) error {
+	return crypto.VerifyHashWithSalt(password, u.HashedPassword)
+}
 
 // # Database operations
 

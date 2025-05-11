@@ -13,6 +13,40 @@ import (
 func TestUserModel(t *testing.T) {
 	ctx := testutils.NewTestingServerHandlerCtx(t)
 
+	t.Run(("SetPassword"), func(t *testing.T) {
+		password := crypto.RandomString(10)
+		user := models.User{
+			Username: crypto.RandomString(10),
+			Email:    crypto.RandomString(10) + "@example.com",
+		}
+		user.SetPassword(password)
+
+		assert.NotEqual(t, user.HashedPassword, password, "Hashed password should not be equal to the plain password")
+		assert.NotEmpty(t, user.HashedPassword, "Hashed password should not be empty")
+
+		assert.NoError(t, crypto.VerifyHashWithSalt(password, user.HashedPassword), "Hashed password verification failed")
+	})
+
+	t.Run("VerifyPassword", func(t *testing.T) {
+		rawPassword := crypto.RandomString(10)
+		user := models.User{
+			Username: crypto.RandomString(10),
+			Email:    crypto.RandomString(10) + "@example.com",
+		}
+		user.SetPassword(rawPassword)
+
+		t.Run("should verify correct password", func(t *testing.T) {
+			err := user.VerifyPassword(rawPassword)
+			assert.NoError(t, err, "Password verification failed")
+		})
+
+		t.Run("should return error for wrong password", func(t *testing.T) {
+			wrongPassword := crypto.RandomString(12) // intentionally different length => 12 != 10
+			err := user.VerifyPassword(wrongPassword)
+			assert.Error(t, err, "Expected error for wrong password")
+		})
+	})
+
 	t.Run("Create & GetByID", func(t *testing.T) {
 		username := crypto.RandomString(10)
 		user := models.User{
